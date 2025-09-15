@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillHub - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Navbar -->
+  <nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">SkillHub</h1>
+    <a href="index.html" class="hover:underline">Logout</a>
+  </nav>
+
+  <!-- Dashboard Content -->
+  <div class="max-w-6xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <!-- Job Posting -->
+    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2">
+      <h2 class="text-xl font-semibold mb-4">Post a Job</h2>
+      <form>
+        <input type="text" placeholder="Job Title" class="w-full px-4 py-2 mb-3 border rounded-lg">
+        <textarea placeholder="Job Description" class="w-full px-4 py-2 mb-3 border rounded-lg"></textarea>
+        <input type="text" placeholder="Location" class="w-full px-4 py-2 mb-3 border rounded-lg">
+        <input type="number" placeholder="Budget (KES)" class="w-full px-4 py-2 mb-3 border rounded-lg">
+        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Post Job</button>
+      </form>
+    </div>
+
+    <!-- Professionals List -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-xl font-semibold mb-4">Suggested Professionals</h2>
+      <ul>
+        <li class="mb-3 border-b pb-2">
+          <p class="font-semibold">John Doe (Plumber)</p>
+          <p class="text-sm text-gray-600">Nairobi • ★★★★☆</p>
+        </li>
+        <li class="mb-3 border-b pb-2">
+          <p class="font-semibold">Jane Smith (Chef)</p>
+          <p class="text-sm text-gray-600">Mombasa • ★★★★☆</p>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+</body>
+</html>
