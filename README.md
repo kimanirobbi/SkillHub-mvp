@@ -47,7 +47,7 @@ Partnerships with training platforms & enterprises.
 
 Backend: Python (Flask / FastAPI)
 
-Database: MySQL (optimized schema for MVP, scalable for growth)
+Database: postgreSQL (optimized schema for MVP, scalable for growth)
 
 Frontend: HTML5, CSS3, Bootstrap/Tailwind
 
