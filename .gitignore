@@ -205,3 +205,31 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environment
+venv/
+.env/
+
+# Ignore environment files
+.env
+
+# Ignore SQLite (if ever used locally)
+*.sqlite3
+*.db
+
+# Ignore IDE/project files
+.vscode/
+.idea/
+*.swp
+
+# Byte-compiled / optimized / DLL files
+*.egg
+*.egg-info
+dist/
+build/
+.eggs/

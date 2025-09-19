@@ -12,8 +12,8 @@
   <nav class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-blue-600">SkillHub</h1>
     <div>
-      <a href="login.html" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Login</a>
-      <a href="signup.html" class="ml-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg">Sign Up</a>
+      <a href="{{ url_for('auth.login') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Login</a>
+      <a href="{{ url_for('auth.signup') }}" class="ml-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg">Sign Up</a>
     </div>
   </nav>
 
@@ -22,7 +22,7 @@
     <h2 class="text-4xl font-bold text-gray-800">The marketplace for all professionals</h2>
     <p class="mt-4 text-lg text-gray-600">Find trusted experts near you or showcase your skills today.</p>
     <div class="mt-6">
-      <a href="signup.html" class="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg">Get Started</a>
+      <a href="{{ url_for('auth.signup') }}" class="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg">Get Started</a>
     </div>
   </section>
 
