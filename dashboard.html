@@ -2,52 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkillHub - Dashboard</title>
+  <title>SkillHub Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-50 text-gray-800">
 
   <!-- Navbar -->
-  <nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold">SkillHub</h1>
-    <a href="{{ url_for('auth.logout') }}" class="hover:underline">Logout</a>
+  <nav class="bg-blue-600 text-white p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://sdmntpreastus2.oaiusercontent.com/files/00000000-b644-61f6-93ea-844466b6f9d0/raw?se=2025-09-19T15%3A50%3A27Z&sp=r&sv=2024-08-04&sr=b&scid=638385a5-18a0-57e2-bdee-28be679e0d5b&skoid=864daabb-d06a-46b3-a747-d35075313a83&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-09-18T23%3A26%3A54Z&ske=2025-09-19T23%3A26%3A54Z&sks=b&skv=2024-08-04&sig=4Httco2cIncVrkUpOXGCehmKU3rccq2p97cBsTehaSQ%3D" alt="SkillHub Logo" class="h-8 w-8">
+      <span class="text-xl font-bold">SkillHub</span>
+    </div>
+
+    <!-- Search bar -->
+    <form method="GET" action="{{ url_for('auth.dashboard') }}" class="flex items-center">
+      <input type="text" name="q" placeholder="Search professionals..."
+             class="p-2 rounded-l border-none text-gray-700 w-64">
+      <button type="submit" class="bg-yellow-400 text-black px-4 py-2 rounded-r">
+        Search
+      </button>
+    </form>
+
+    <a href="{{ url_for('auth.logout') }}" class="ml-6 text-sm">Logout</a>
   </nav>
- 
-  <!-- Dashboard Content -->
-  <div class="max-w-6xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
 
-    <!-- Job Posting -->
-    <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2">
-      <h2 class="text-xl font-semibold mb-4">Post a Job</h2>
-      <form>
-        <input type="text" placeholder="Job Title" class="w-full px-4 py-2 mb-3 border rounded-lg">
-        <textarea placeholder="Job Description" class="w-full px-4 py-2 mb-3 border rounded-lg"></textarea>
-        <input type="text" placeholder="Location" class="w-full px-4 py-2 mb-3 border rounded-lg">
-        <input type="number" placeholder="Budget (KES)" class="w-full px-4 py-2 mb-3 border rounded-lg">
-        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Post Job</button>
-       
-        
+  <!-- Welcome Section -->
+  <section class="p-6">
+    <h1 class="text-2xl font-semibold">Welcome, {{ current_user.name }}!</h1>
+    <p class="text-gray-600">Role: {{ current_user.role|capitalize }}</p>
+  </section>
 
-      </form>
+  <!-- About Us -->
+  <section class="bg-white shadow rounded p-6 m-6">
+    <h2 class="text-xl font-bold mb-2">About Us</h2>
+    <p class="text-gray-700">
+      SkillHub is the marketplace where clients connect with trusted professionals across industries.
+      From plumbing to programming, we make it easy to find the right expert near you.
+    </p>
+  </section>
+
+  <!-- Social Media -->
+  <footer class="bg-blue-600 text-white p-6 mt-8">
+    <div class="flex justify-between items-center">
+      <span>&copy; 2025 SkillHub. All rights reserved.</span>
+      <div class="flex space-x-4">
+        <a href="https://facebook.com" target="_blank">Facebook</a>
+        <a href="https://twitter.com" target="_blank">Twitter</a>
+        <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+      </div>
     </div>
-
-    <!-- Professionals List -->
-    <div class="bg-white p-6 rounded-xl shadow-md">
-      <h2 class="text-xl font-semibold mb-4">Suggested Professionals</h2>
-      <ul>
-        <li class="mb-3 border-b pb-2">
-          <p class="font-semibold">John Doe (Plumber)</p>
-          <p class="text-sm text-gray-600">Nairobi • ★★★★☆</p>
-        </li>
-        <li class="mb-3 border-b pb-2">
-          <p class="font-semibold">Jane Smith (Chef)</p>
-          <p class="text-sm text-gray-600">Mombasa • ★★★★☆</p>
-        </li>
-      </ul>
-    </div>
-<p>&copy; 2025 skillHub. All Rights reserved. </p>
-  </div>
+  </footer>
 
 </body>
 </html>
