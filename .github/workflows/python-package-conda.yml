@@ -1,34 +1,43 @@
-name: Python Package using Conda
+name: Build and Test (Linux)
 
-on: [push]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 5
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
+        python-version: "3.12"
+        cache: "pip"
+        cache-dependency-path: |
+          requirements.txt
+          **/pyproject.toml
+          **/setup.cfg
+
+    - name: Install uv (fast Python package installer)
+      uses: astral-sh/setup-uv@v3
+
     - name: Install dependencies
       run: |
-          pip install -r requirements.txt
-    - name: Lint with flake8
+        python -m pip install --upgrade pip
+        # Prefer standard requirements.txt
+        if [ -f "requirements.txt" ]; then uv pip install -r requirements.txt; else pip install -r requirments.txt; fi
+        uv pip install pytest
+
+    - name: Run tests
+      env:
+        # Force SQLite for CI; tests call create_all/drop_all
+        DATABASE_URL: sqlite:///skillhub_ci.db
       run: |
-        conda install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        conda install pytest
-        pytest
+        pytest -q
+
