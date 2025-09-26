@@ -1,0 +1,12 @@
+{
+  "name": "skillhub-mvp",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:css": "npx tailwindcss -i app/static/src/input.css -o app/static/css/tailwind.css --minify",
+    "watch:css": "npx tailwindcss -i app/static/src/input.css -o app/static/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.10"
+  }
+}
