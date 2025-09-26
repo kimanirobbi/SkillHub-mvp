@@ -1,0 +1,38 @@
+{
+  "python.testing.unittestArgs": [
+    "-v",
+    "-s",
+    ".",
+    "-p",
+    "*test.py"
+  ],
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestEnabled": true,
+  "json.schemas": [
+    {
+      "fileMatch": [".vscode/settings.json", "settings.json"],
+      "url": "${workspaceFolder}/.vscode/mcp.schema.json"
+    }
+  ],
+  "terminal.integrated.profiles.windows": {
+    "PowerShell (where shim)": {
+      "source": "PowerShell",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "function where { where.exe @Args }"
+      ],
+      "icon": "terminal-powershell"
+    },
+    "PowerShell 7 (where shim)": {
+      "path": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "function where { where.exe @Args }"
+      ],
+      "icon": "terminal-powershell"
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "PowerShell (where shim)"
+} 
