@@ -1,3 +1,45 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+  Base overrides to complement Tailwind Preflight and satisfy IDE CSS warnings:
+  - Provide standard 'appearance' alongside vendor-prefixed usages.
+  - Remove vertical-align from block-level media elements.
+*/
+@layer base {
+  button,
+  input[type="button"],
+  input[type="reset"],
+  input[type="submit"] {
+    /* Tailwind sets -webkit-appearance: button; add standard for compatibility */
+    appearance: button;
+  }
+
+  [type="search"] {
+    /* Tailwind sets -webkit-appearance: textfield; add standard */
+    appearance: textfield;
+  }
+
+  ::-webkit-search-decoration {
+    /* Tailwind sets -webkit-appearance: none; add standard */
+    appearance: none;
+  }
+
+  ::-webkit-file-upload-button {
+    /* Tailwind sets -webkit-appearance: button; add standard */
+    appearance: button;
+  }
+
+  /* Tailwind sets display:block + vertical-align:middle on these; remove vertical-align to avoid warning */
+  audio,
+  canvas,
+  embed,
+  iframe,
+  img,
+  object,
+  svg,
+  video {
+    vertical-align: baseline; /* or 'initial'/'unset' — baseline aligns with text as a neutral default */
+  }
+}
