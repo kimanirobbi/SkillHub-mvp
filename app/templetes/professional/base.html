@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Professional Dashboard{% endblock %} - SkillHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="{{ url_for('auth.dashboard') }}" class="text-2xl font-bold">SkillHub</a>
+            
+            <!-- Mobile menu button -->
+            <button class="md:hidden" id="mobile-menu-button">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="{{ url_for('auth.dashboard') }}" class="hover:bg-blue-700 px-3 py-2 rounded">Dashboard</a>
+                <a href="{{ url_for('professional.profile') }}" class="hover:bg-blue-700 px-3 py-2 rounded">My Profile</a>
+                <a href="#" class="hover:bg-blue-700 px-3 py-2 rounded">My Services</a>
+                <a href="#" class="hover:bg-blue-700 px-3 py-2 rounded">Bookings</a>
+                
+                <!-- User Dropdown -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 focus:outline-none">
+                        <img src="{{ url_for('static', filename='uploads/' + (current_user.professional.profile_picture if current_user.professional and current_user.professional.profile_picture else 'default_profile.png')) }}" 
+                             alt="Profile" 
+                             class="w-8 h-8 rounded-full object-cover">
+                        <span>{{ current_user.name }}</span>
+                        <i class="fas fa-chevron-down text-sm"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block z-50">
+                        <a href="{{ url_for('professional.profile') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                            <i class="fas fa-user-circle mr-2"></i>Profile
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                            <i class="fas fa-cog mr-2"></i>Settings
+                        </a>
+                        <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="{{ url_for('auth.dashboard') }}" class="block px-3 py-2 hover:bg-blue-700 rounded">Dashboard</a>
+                <a href="{{ url_for('professional.profile') }}" class="block px-3 py-2 hover:bg-blue-700 rounded">My Profile</a>
+                <a href="#" class="block px-3 py-2 hover:bg-blue-700 rounded">My Services</a>
+                <a href="#" class="block px-3 py-2 hover:bg-blue-700 rounded">Bookings</a>
+                <a href="{{ url_for('professional.profile') }}" class="block px-3 py-2 hover:bg-blue-700 rounded">
+                    <i class="fas fa-user-circle mr-2"></i>Profile
+                </a>
+                <a href="#" class="block px-3 py-2 hover:bg-blue-700 rounded">
+                    <i class="fas fa-cog mr-2"></i>Settings
+                </a>
+                <a href="{{ url_for('auth.logout') }}" class="block px-3 py-2 hover:bg-blue-700 rounded">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mx-auto px-4 py-2">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-md {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold">SkillHub</h3>
+                    <p class="text-gray-400">Connecting professionals with clients</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 SkillHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

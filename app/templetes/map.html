@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillHub Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        #map { height: 100vh; width: 100%; }
+        .logo {
+            position: absolute; top: 10px; left: 20px; z-index: 1000;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 12px; border-radius: 8px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .logo img { height: 30px; }
+    </style>
+</head>
+<body>
+
+    <div class="logo">
+        <img src="{{ url_for('static', filename='icons/skillhub_logo.png') }}" alt="SkillHub Logo">
+        <strong>SkillHub Live Map</strong>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        // Initialize the map centered on Kenya
+        var map = L.map('map').setView([-1.286389, 36.817223], 7);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Fetch professionals from Flask API
+        fetch('/api/professionals')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(pro => {
+                    // Select icon based on profession
+                    let iconUrl = '/static/icons/default.png';
+                    if (pro.profession.toLowerCase().includes('electrician')) iconUrl = '/static/icons/electrician.png';
+                    else if (pro.profession.toLowerCase().includes('plumber')) iconUrl = '/static/icons/plumber.png';
+                    else if (pro.profession.toLowerCase().includes('mechanic')) iconUrl = '/static/icons/mechanic.png';
+                    else if (pro.profession.toLowerCase().includes('developer')) iconUrl = '/static/icons/developer.png';
+                    else if (pro.profession.toLowerCase().includes('designer')) iconUrl = '/static/icons/designer.png';
+
+                    // Create custom icon
+                    var proIcon = L.icon({
+                        iconUrl: iconUrl,
+                        iconSize: [35, 35],
+                        iconAnchor: [17, 35],
+                        popupAnchor: [0, -35]
+                    });
+
+                    // Add marker to map
+                    var marker = L.marker([pro.latitude, pro.longitude], { icon: proIcon })
+                        .addTo(map)
+                        .bindPopup(`
+                            <b>${pro.name}</b><br>
+                            ${pro.profession}<br>
+                            ⭐ Rating: ${pro.rating || 'N/A'}
+                        `);
+                });
+            });
+    </script>
+</body>
+</html>

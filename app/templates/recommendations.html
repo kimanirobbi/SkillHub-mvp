@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Recommended Professionals</h2>
+            <p class="text-muted">Top professionals matched for your job requirements</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="maxDistance" class="form-label">Max Distance (km)</label>
+                    <input type="range" class="form-range" min="1" max="100" value="50" id="maxDistance">
+                    <div class="text-center"><span id="distanceValue">50</span> km</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="minRating" class="form-label">Minimum Rating</label>
+                    <div class="d-flex align-items-center">
+                        <input type="range" class="form-range" min="0" max="5" step="0.5" value="4" id="minRating">
+                        <span class="ms-2" id="ratingValue">4.0</span>
+                        <i class="fas fa-star text-warning ms-1"></i>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-primary" onclick="loadRecommendations()">
+                        <i class="fas fa-sync-alt me-2"></i>Update Results
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="text-center my-5" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Finding the best professionals for you...</p>
+    </div>
+
+    <!-- Results Container -->
+    <div id="recommendations" class="row g-4">
+        <!-- Recommendations will be inserted here -->
+    </div>
+
+    <!-- No Results Message -->
+    <div id="noResults" class="text-center py-5" style="display: none;">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h4>No professionals found</h4>
+        <p class="text-muted">Try adjusting your filters or check back later.</p>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="alert alert-danger mt-4" style="display: none;">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span id="errorText">An error occurred while loading recommendations.</span>
+    </div>
+</div>
+
+<!-- Professional Card Template (Hidden) -->
+<template id="proCardTemplate">
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex">
+                    <img src="{{ url_for('static', filename='img/default-avatar.png') }}" 
+                         class="rounded-circle me-3" 
+                         width="64" 
+                         height="64" 
+                         alt="Professional"
+                         onerror="this.src='{{ url_for('static', filename='img/default-avatar.png') }}'">
+                    <div>
+                        <h5 class="card-title mb-1">
+                            <a href="#" class="text-decoration-none professional-name"></a>
+                            <span class="badge bg-success ms-2 professional-rating"></span>
+                        </h5>
+                        <p class="text-muted mb-1 professional-profession"></p>
+                        <p class="text-muted small mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i> 
+                            <span class="professional-distance"></span> km away • 
+                            <span class="professional-reviews"></span> reviews
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Match Score:</span>
+                        <div class="progress flex-grow-1 mx-2" style="height: 20px;">
+                            <div class="progress-bar bg-success professional-score-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <span class="professional-score"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-light text-dark me-1 mb-1">
+                            <i class="fas fa-briefcase me-1"></i> 
+                            <span class="professional-experience"></span> years
+                        </span>
+                        <span class="badge bg-light text-dark me-1 mb-1">
+                            <i class="fas fa-dollar-sign me-1"></i> 
+                            $<span class="professional-rate"></span>/hr
+                        </span>
+                    </div>
+                    
+                    <div class="skills-container mb-3">
+                        <!-- Skills will be inserted here -->
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="far fa-envelope me-1"></i> Contact
+                    </button>
+                    <button class="btn btn-primary btn-sm">
+                        <i class="far fa-calendar-alt me-1"></i> Book Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Skill Badge Template (Hidden) -->
+<template id="skillBadgeTemplate">
+    <span class="badge bg-light text-dark me-1 mb-1"></span>
+</template>
+
+<style>
+.professional-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.professional-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.skill-badge {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.match-score {
+    font-weight: 600;
+    color: #198754;
+}
+
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update slider values
+    document.getElementById('maxDistance').addEventListener('input', function() {
+        document.getElementById('distanceValue').textContent = this.value;
+    });
+    
+    document.getElementById('minRating').addEventListener('input', function() {
+        document.getElementById('ratingValue').textContent = this.value;
+    });
+    
+    // Load recommendations when page loads
+    const urlParams = new URLSearchParams(window.location.search);
+    const jobId = urlParams.get('job_id');
+    if (jobId) {
+        loadRecommendations(jobId);
+    }
+});
+
+function loadRecommendations(jobId) {
+    if (!jobId) {
+        jobId = new URLSearchParams(window.location.search).get('job_id');
+    }
+    
+    if (!jobId) {
+        showError('No job ID specified');
+        return;
+    }
+    
+    const maxDistance = document.getElementById('maxDistance').value;
+    const minRating = document.getElementById('minRating').value;
+    
+    // Show loading state
+    document.getElementById('loadingIndicator').style.display = 'block';
+    document.getElementById('recommendations').innerHTML = '';
+    document.getElementById('noResults').style.display = 'none';
+    document.getElementById('errorMessage').style.display = 'none';
+    
+    // Build query parameters
+    const params = new URLSearchParams({
+        max_distance: maxDistance,
+        min_rating: minRating,
+        limit: 12
+    });
+    
+    // Make API request
+    fetch(`/api/jobs/${jobId}/recommendations?${params}`)
+        .then(handleResponse)
+        .then(data => {
+            displayRecommendations(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Failed to load recommendations. Please try again.');
+        })
+        .finally(() => {
+            document.getElementById('loadingIndicator').style.display = 'none';
+        });
+}
+
+function handleResponse(response) {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.error || 'Network response was not ok');
+        });
+    }
+    return response.json();
+}
+
+function displayRecommendations(data) {
+    const container = document.getElementById('recommendations');
+    const template = document.getElementById('proCardTemplate');
+    const skillTemplate = document.getElementById('skillBadgeTemplate');
+    
+    if (!data.recommendations || data.recommendations.length === 0) {
+        document.getElementById('noResults').style.display = 'block';
+        return;
+    }
+    
+    container.innerHTML = ''; // Clear existing content
+    
+    data.recommendations.forEach(pro => {
+        // Clone the template
+        const card = template.content.cloneNode(true);
+        
+        // Fill in the data
+        card.querySelector('.professional-name').textContent = pro.name;
+        card.querySelector('.professional-profession').textContent = pro.profession;
+        card.querySelector('.professional-rating').textContent = pro.rating?.toFixed(1) || 'N/A';
+        card.querySelector('.professional-distance').textContent = pro.distance_km?.toFixed(1) || 'N/A';
+        card.querySelector('.professional-reviews').textContent = pro.total_reviews || 0;
+        card.querySelector('.professional-experience').textContent = pro.years_experience || 0;
+        card.querySelector('.professional-rate').textContent = pro.hourly_rate?.toFixed(2) || 'N/A';
+        
+        // Set match score
+        const scorePercent = Math.round(pro.match_score * 100);
+        card.querySelector('.professional-score').textContent = `${scorePercent}%`;
+        card.querySelector('.professional-score-bar').style.width = `${scorePercent}%`;
+        
+        // Set professional image if available
+        if (pro.photo && pro.photo !== 'default_profile.png') {
+            const img = card.querySelector('img');
+            img.src = `/static/uploads/profiles/${pro.photo}`;
+        }
+        
+        // Add skills
+        const skillsContainer = card.querySelector('.skills-container');
+        if (pro.skills && pro.skills.length > 0) {
+            // Limit to first 5 skills
+            const skillsToShow = pro.skills.slice(0, 5);
+            skillsToShow.forEach(skill => {
+                const skillBadge = skillTemplate.content.cloneNode(true);
+                const badge = skillBadge.querySelector('.badge');
+                badge.textContent = skill;
+                skillsContainer.appendChild(skillBadge);
+            });
+            
+            // Add +X more if there are additional skills
+            if (pro.skills.length > 5) {
+                const moreBadge = document.createElement('span');
+                moreBadge.className = 'badge bg-light text-dark';
+                moreBadge.textContent = `+${pro.skills.length - 5} more`;
+                skillsContainer.appendChild(moreBadge);
+            }
+        }
+        
+        // Add event listeners for buttons
+        const contactBtn = card.querySelector('.btn-outline-primary');
+        const bookBtn = card.querySelector('.btn-primary');
+        
+        contactBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // TODO: Implement contact functionality
+            console.log('Contact:', pro.id);
+        });
+        
+        bookBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // TODO: Implement booking functionality
+            console.log('Book:', pro.id);
+        });
+        
+        container.appendChild(card);
+    });
+}
+
+function showError(message) {
+    const errorElement = document.getElementById('errorMessage');
+    document.getElementById('errorText').textContent = message;
+    errorElement.style.display = 'block';
+}
+
+// Export for testing
+window.recommendationsModule = {
+    loadRecommendations,
+    displayRecommendations,
+    showError
+};
+</script>
+{% endblock %}

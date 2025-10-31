@@ -1,0 +1,5 @@
+<form method="post" enctype="multipart/form-data">
+    <textarea name="bio">{{ current_user.bio }}</textarea>
+    <input type="file" name="photo" accept="image/*">
+    <button type="submit">Update</button>
+</form>

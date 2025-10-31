@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Become a Professional - SkillHub{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-blue-600 text-white px-6 py-8 text-center">
+            <h1 class="text-3xl font-bold">Become a Professional on SkillHub</h1>
+            <p class="mt-2 text-blue-100">Join our community of skilled professionals and start offering your services today!</p>
+        </div>
+        
+        <div class="p-6">
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                <div class="text-center mb-6">
+                    <div class="relative inline-block">
+                        <img id="profilePreview" 
+                             src="{{ url_for('static', filename='images/default-avatar.png') }}" 
+                             alt="Profile Preview" 
+                             class="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover">
+                        <label for="profile_picture" class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 cursor-pointer hover:bg-blue-700">
+                            <i class="fas fa-camera"></i>
+                            <input type="file" id="profile_picture" name="profile_picture" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input type="text" id="full_name" name="full_name" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                               value="{{ current_user.name }}">
+                    </div>
+                    
+                    <div>
+                        <label for="profession" class="block text-sm font-medium text-gray-700">Profession</label>
+                        <select id="profession" name="profession" required
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Select your profession</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Engineer">Engineer</option>
+                            <option value="Plumber">Plumber</option>
+                            <option value="Electrician">Electrician</option>
+                            <option value="Carpenter">Carpenter</option>
+                            <option value="Graphic Designer">Graphic Designer</option>
+                            <option value="Web Developer">Web Developer</option>
+                            <option value="Photographer">Photographer</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    
+                    <div>
+                        <label for="experience" class="block text-sm font-medium text-gray-700">Years of Experience</label>
+                        <input type="number" id="experience" name="experience" min="0"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="bio" class="block text-sm font-medium text-gray-700">About You</label>
+                    <div class="mt-1">
+                        <textarea id="bio" name="bio" rows="4" required
+                                 class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-gray-300 rounded-md"
+                                 placeholder="Tell us about your skills and experience..."></textarea>
+                    </div>
+                    <p class="mt-2 text-sm text-gray-500">This will be displayed on your public profile.</p>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="terms" name="terms" type="checkbox" required
+                               class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="terms" class="font-medium text-gray-700">I agree to the <a href="#" class="text-blue-600 hover:text-blue-500">Terms of Service</a> and <a href="#" class="text-blue-600 hover:text-blue-500">Privacy Policy</a></label>
+                    </div>
+                </div>
+                
+                <div class="pt-4">
+                    <button type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Complete Registration
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+            Already have an account? 
+            <a href="{{ url_for('auth.login') }}" class="font-medium text-blue-600 hover:text-blue-500">
+                Sign in
+            </a>
+        </p>
+    </div>
+</div>
+
+<script>
+    // Preview profile picture before upload
+    document.getElementById('profile_picture').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profilePreview').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

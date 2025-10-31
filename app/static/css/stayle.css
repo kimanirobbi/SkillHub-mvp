@@ -1,0 +1,12 @@
+/* Custom styles */
+.map-container {
+    height: 500px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+/* Add any additional custom styles here */
