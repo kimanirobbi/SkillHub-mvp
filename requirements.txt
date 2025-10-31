@@ -9,3 +9,4 @@ sentence-transformers
 scikit-learn
 numpy
 flask-limiter>=4.0.0
+flask-migrate>=4.0.5

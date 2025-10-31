@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Login - SkillHub{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg mt-10">
+    <h2 class="text-2xl font-bold text-center mb-6">Login to SkillHub</h2>
+    
+    <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-6">
+        {{ form.hidden_tag() }}
+        
+        <div>
+            {{ form.email.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.email(class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500") }}
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <div>
+            {{ form.password.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.password(class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500") }}
+            {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                {{ form.remember_me(class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded") }}
+                {{ form.remember_me.label(class="ml-2 block text-sm text-gray-700") }}
+            </div>
+            
+            <div class="text-sm">
+                <a href="#" class="font-medium text-blue-600 hover:text-blue-500">
+                    Forgot your password?
+                </a>
+            </div>
+        </div>
+        
+        <div>
+            {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500") }}
+        </div>
+    </form>
+    
+    <div class="mt-6">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-500">
+                    Or continue with
+                </span>
+            </div>
+        </div>
+        
+        <div class="mt-6 grid grid-cols-2 gap-3">
+            <div>
+                <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Sign in with Google</span>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,14.991,2,12.166,2C6.756,2,2.297,6.459,2.297,11.87c0,5.411,4.458,9.87,9.867,9.87c4.908,0,8.99-3.223,10.4-7.628c0.008-0.025,0.017-0.051,0.025-0.077c0.008-0.025,0.017-0.051,0.025-0.077c0.5-1.5,0.78-3.11,0.78-4.75c0-0.104-0.004-0.207-0.007-0.31H12.545z"/>
+                    </svg>
+                </a>
+            </div>
+            <div>
+                <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Sign in with GitHub</span>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.603-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.933.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C17.14 18.17 20 14.444 20 10.017 20 4.484 15.522 0 10 0z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+            Don't have an account?
+            <a href="{{ url_for('auth.signup') }}" class="font-medium text-blue-600 hover:text-blue-500">
+                Sign up
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}

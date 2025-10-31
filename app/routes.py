@@ -3,11 +3,11 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from app import db, limiter
-from app.modules import AISuggestion as AISuggestionModel
+from app.modules import AISuggestion as AISuggestionModel, User
 from flask_login import login_user, logout_user, login_required, current_user
 from .utils import role_required
 from datetime import datetime
-from .forms import JobForm  
+from .forms import JobForm, LoginForm  
 
 # Configuration for file uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -116,22 +116,22 @@ def signup():
 # -----------------------
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-
-        user = User.query.filter_by(email=email).first()
-
-        if user and user.check_password(password):
-            login_user(user)  # Flask-Login manages session
+    if current_user.is_authenticated:
+        return redirect(url_for('auth.dashboard'))
+        
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
             flash(f"Welcome back, {user.get_full_name()}!", "success")
             next_page = request.args.get('next')
             return redirect(next_page or url_for("auth.dashboard"))
         else:
             flash("Invalid email or password", "danger")
-            return redirect(url_for("auth.login"))
-
-    return render_template("login.html")
+    
+    return render_template("login.html", title="Sign In", form=form)
 
 
 # =======================

@@ -19,23 +19,24 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-def create_app():
-    # Configure template and static folders explicitly
+def create_app(config_class=None):
+    # Create and configure the app
+    app = Flask(__name__)
+    
+    # Configure the app
+    if config_class is None:
+        from config import config
+        config_name = os.getenv('FLASK_ENV', 'development')
+        config_class = config[config_name]
+    
+    app.config.from_object(config_class)
+    
+    # Configure template and static folders
     base_dir = os.path.dirname(__file__)
-    templates_path = os.path.abspath(os.path.join(base_dir, 'templetes'))
+    templates_path = os.path.abspath(os.path.join(base_dir, 'templates'))  # Fixed typo: 'templetes' -> 'templates'
     static_path = os.path.abspath(os.path.join(base_dir, 'static'))
-    app = Flask(
-        __name__,
-        template_folder=templates_path,
-        static_folder=static_path,
-        static_url_path='/static'
-    )
-
-    # Configurations from .env
-    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "fallback-secret")
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///skillhub.db")
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    # Development: disable static file caching and auto-reload templates
+    app.template_folder = templates_path
+    app.static_folder = static_path
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
