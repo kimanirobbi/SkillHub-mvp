@@ -58,11 +58,12 @@ def runner(app):
 class AuthActions:
     def __init__(self, client):
         self._client = client
-    
+
     def login(self, email='test@example.com', password='testpass123'):
         return self._client.post(
-            '/login',
+            '/auth/login',
             data={'email': email, 'password': password},
+            # Add follow_redirects if the login redirects on success
             follow_redirects=True
         )
     

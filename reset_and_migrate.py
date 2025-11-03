@@ -21,6 +21,7 @@ def reset_and_migrate():
                 email="test@example.com",
                 first_name="Test",
                 last_name="User",
+                phone="+254712345678",
                 password_hash=generate_password_hash("password123"),
                 role="admin",
                 email_verified=True
@@ -32,9 +33,19 @@ def reset_and_migrate():
             print("Creating test professional...")
             professional = Professional(
                 full_name="Test Professional",
-                profession="Developer",
-                bio="Experienced developer",
-                user_id=user.id
+                profession="Full Stack Developer",
+                bio="Experienced full-stack developer with 5+ years of experience in web development. Specializing in Python, JavaScript, and cloud technologies.",
+                phone="+254712345678",
+                address="123 Test Street, Westlands",
+                city="Nairobi",
+                country="Kenya",
+                years_experience=5,
+                hourly_rate=50.0,
+                skills="Python, JavaScript, Flask, React, SQL, AWS",
+                education="BSc in Computer Science, University of Nairobi",
+                certifications="AWS Certified Developer, Python Institute Certification",
+                user_id=user.id,
+                is_available=True
             )
             db.session.add(professional)
             db.session.commit()

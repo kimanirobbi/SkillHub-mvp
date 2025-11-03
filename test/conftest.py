@@ -49,7 +49,7 @@ def db(app):
         
         _db.session.remove()
         _db.drop_all()
-        _db.get_engine(app).dispose()
+        db.engine.dispose() 
 
 class AuthActions(object):
     def __init__(self, client):
