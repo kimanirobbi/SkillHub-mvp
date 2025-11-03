@@ -53,8 +53,11 @@ def create_app(config_class=None):
     from .modules import User, Service, Booking, Payment, Professional
 
     # Import and register Blueprints
-    from .routes import auth_bp
-    app.register_blueprint(auth_bp)
+    from .main import bp as main_bp
+    app.register_blueprint(main_bp)
+    
+    from .auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
 
     # Register geo blueprint
     from .geo_routes import geo_bp

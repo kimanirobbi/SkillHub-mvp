@@ -12,18 +12,29 @@
             <div class="flex justify-between">
                 <div class="flex space-x-7">
                     <div>
-                        <a href="{{ url_for('auth.home') }}" class="flex items-center py-4 px-2">
+                        <a href="{{ url_for('main.index') }}" class="flex items-center py-4 px-2">
                             <span class="font-semibold text-gray-500 text-lg">SkillHub</span>
                         </a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('auth.dashboard') }}" class="py-2 px-4 font-medium text-gray-500 rounded hover:bg-blue-500 hover:text-white transition duration-300">Dashboard</a>
-                        <a href="{{ url_for('auth.logout') }}" class="py-2 px-4 font-medium text-gray-500 rounded hover:bg-red-500 hover:text-white transition duration-300">Logout</a>
+                        <a href="{{ url_for('main.index') }}" class="py-2 px-4 font-medium text-gray-500 rounded hover:bg-blue-500 hover:text-white transition duration-300">Home</a>
+                        <div class="relative group">
+                            <button class="flex items-center space-x-2 py-2 px-4 font-medium text-gray-500 rounded hover:bg-blue-500 hover:text-white transition duration-300">
+                                <span>{{ current_user.get_full_name() or current_user.username }}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div class="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                                <a href="{{ url_for('main.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
+                                <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</a>
+                            </div>
+                        </div>
                     {% else %}
                         <a href="{{ url_for('auth.login') }}" class="py-2 px-4 font-medium text-gray-500 rounded hover:bg-blue-500 hover:text-white transition duration-300">Login</a>
-                        <a href="{{ url_for('auth.signup') }}" class="py-2 px-4 font-medium text-white bg-blue-500 rounded hover:bg-blue-400 transition duration-300">Sign Up</a>
+                        <a href="{{ url_for('auth.register') }}" class="py-2 px-4 font-medium text-white bg-blue-500 rounded hover:bg-blue-400 transition duration-300">Sign Up</a>
                     {% endif %}
                 </div>
             </div>

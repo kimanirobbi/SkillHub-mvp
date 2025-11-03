@@ -3,6 +3,25 @@ from app import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func, Column, Integer, String, Float, DateTime, ForeignKey, Table
+
+# Association table for many-to-many relationship between User and Role
+user_roles = db.Table('user_roles',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('role_id', db.Integer, db.ForeignKey('roles.id', ondelete='CASCADE'), primary_key=True)
+)
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, nullable=False)
+    description = db.Column(db.String(255))
+    
+    # Relationship
+    users = db.relationship('User', secondary=user_roles, back_populates='roles')
+    
+    def __repr__(self):
+        return f'<Role {self.name}>'
  
 # --------------------------
 # User Model
@@ -38,6 +57,11 @@ class User(UserMixin, db.Model):
     bookings = db.relationship('Booking', back_populates='client', lazy=True, cascade='all, delete-orphan')
     reviews_given = db.relationship('Review', back_populates='client', lazy=True, cascade='all, delete-orphan')
     job_postings = db.relationship('Job', back_populates='poster', lazy=True, cascade='all, delete-orphan')
+    roles = db.relationship('Role', secondary=user_roles, back_populates='users', lazy='dynamic')
+    
+    def has_role(self, role_name):
+        """Check if user has a specific role."""
+        return self.roles.filter(Role.name == role_name).first() is not None
 
     def __repr__(self):
         return f"<User {self.email}>"
