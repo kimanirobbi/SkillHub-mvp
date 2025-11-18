@@ -8,12 +8,12 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-123'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'test.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    TESTING = True
-    WTF_CSRF_ENABLED = False  # Disable CSRF for testing
+    UPLOAD_FOLDER = os.path.join(basedir, 'app', 'static', 'uploads')
 
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+    WTF_CSRF_ENABLED = False
 
 class TestingConfig(Config):
     TESTING = True
@@ -21,6 +21,8 @@ class TestingConfig(Config):
     WTF_CSRF_ENABLED = False
 
 class ProductionConfig(Config):
+    TESTING = False
+    WTF_CSRF_ENABLED = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'skillhub.db')
 
 config = {

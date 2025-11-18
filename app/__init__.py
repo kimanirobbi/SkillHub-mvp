@@ -1,11 +1,12 @@
 import os
-from flask import Flask
+from flask import Flask, request # Import request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
+import logging # Import logging
 
 # Load environment variables from .env file
 load_dotenv()
@@ -13,11 +14,15 @@ load_dotenv()
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
-limiter = Limiter(
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"],
-    storage_uri="memory://"
-)
+# limiter = Limiter(
+#     key_func=get_remote_address,
+#     default_limits=["200 per day", "50 per hour"],
+#     storage_uri="memory://"
+# )
+
+# ...
+
+# limiter.init_app(app)
 
 def create_app(config_class=None):
     # Create and configure the app
@@ -40,10 +45,32 @@ def create_app(config_class=None):
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
+    # Configure logging
+    # Create a file handler for logging
+    file_handler = logging.FileHandler('flask_requests.log')
+    file_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    )
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('Flask startup')
+
+    # Log requests
+    @app.before_request
+    def log_request_info():
+        app.logger.info(f'Request: {request.method} {request.url}')
+
+    @app.after_request
+    def log_response_info(response):
+        app.logger.info(f'Response: {request.method} {request.url} Status: {response.status_code}')
+        return response
+
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    limiter.init_app(app)
+    # limiter.init_app(app)
 
     # Initialize Flask-Login
     login_manager.init_app(app)
@@ -63,10 +90,14 @@ def create_app(config_class=None):
     from .geo_routes import geo_bp
     app.register_blueprint(geo_bp)
 
+    # Register admin blueprint
+    from .admin import admin_bp
+    app.register_blueprint(admin_bp)
+
     return app
 
 @login_manager.user_loader
 def load_user(user_id):
     # local import to avoid circular dependency during app creation
-    from .modules import User
+    from .models import User
     return db.session.get(User, int(user_id))

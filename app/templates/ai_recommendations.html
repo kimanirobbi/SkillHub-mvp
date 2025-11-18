@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}AI Recommendations - SkillHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6">AI Recommendations</h1>
+    <div class="bg-white rounded-lg shadow p-6">
+        <p>This is a placeholder page for viewing AI-powered professional recommendations.</p>
+        <a href="{{ url_for('main.dashboard') }}" class="text-blue-500 hover:underline mt-4 inline-block">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,77 +1,30 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillHub - Marketplace for All Professionals</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
+</head>
+<body class="bg-light font-sans">
 
-{% block title %}Welcome to SkillHub{% endblock %}
-
-{% block content %}
-<div class="bg-white py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                <span class="block">Find the perfect professional</span>
-                <span class="block text-blue-600">for any job</span>
-            </h1>
-            <p class="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-                Connect with skilled professionals in your area for all your project needs.
-            </p>
-            <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-                <div class="rounded-md shadow">
-                    <a href="{{ url_for('auth.register') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
-                        Get started
-                    </a>
-                </div>
-                <div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-                    <a href="#" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
-                        Learn more
-                    </a>
-                </div>
-            </div>
-        </div>
+  <!-- Navbar -->
+  <nav class="bg-white shadow-soft px-6 py-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-primary">SkillHub</h1>
+    <div>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+      <a href="{{ url_for('auth.register') }}" class="ml-2 btn btn-outline-primary">Sign Up</a>
     </div>
-</div>
+  </nav>
 
-<div class="py-12 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center">
-            <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">Features</h2>
-            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                A better way to find professionals
-            </p>
-        </div>
-
-        <div class="mt-10">
-            <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10">
-                <div class="relative">
-                    <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Easy to find</p>
-                    <p class="mt-2 ml-16 text-base text-gray-500">Quickly find professionals based on skills, location, and reviews.</p>
-                </div>
-
-                <div class="relative">
-                    <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                    </div>
-                    <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Verified professionals</p>
-                    <p class="mt-2 ml-16 text-base text-gray-500">All professionals are vetted to ensure quality service.</p>
-                </div>
-
-                <div class="relative">
-                    <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10a9 9 0 00-18 0" />
-                        </svg>
-                    </div>
-                    <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Secure payments</p>
-                    <p class="mt-2 ml-16 text-base text-gray-500">Pay securely through our platform with protection for both parties.</p>
-                </div>
-            </div>
-        </div>
+  <!-- Hero Section -->
+  <section class="text-center py-20">
+    <h2 class="text-4xl font-bold text-dark">The marketplace for all professionals</h2>
+    <p class="mt-4 text-lg text-secondary">Find trusted experts near you or showcase your skills today.</p>
+    <div class="mt-6">
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary text-lg">Get Started</a>
     </div>
-</div>
-{% endblock %}
+  </section>
+
+</body>
+</html>

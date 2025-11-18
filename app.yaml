@@ -1,0 +1,12 @@
+runtime: python310
+entrypoint: gunicorn -b :$PORT "app:create_app()"
+
+instance_class: F1
+
+automatic_scaling:
+  max_instances: 1
+
+env_variables:
+  FLASK_ENV: "production"
+  SECRET_KEY: FpgBRb9I13MURxA9EXEFjJiHocHhdTGV 
+  DATABASE_URL: postgresql://skillhub_l9nd_user:FpgBRb9I13MURxA9EXEFjJiHocHhdTGV@dpg-d4bh8a3uibrs739stfg0-a.oregon-postgres.render.com/skillhub_l9nd

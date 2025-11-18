@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from app import db
 from app.models import User
@@ -18,7 +18,12 @@ def login():
             return redirect(url_for('auth.login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
-        return redirect(next_page or url_for('main.index'))
+        if not next_page:
+            if user.role == 'admin':
+                next_page = url_for('admin.dashboard')
+            else:
+                next_page = url_for('main.dashboard')
+        return redirect(next_page)
     
     return render_template('auth/login.html', title='Sign In', form=form)
 
@@ -34,16 +39,21 @@ def register():
     
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(
-            username=form.username.data,
-            email=form.email.data,
-            first_name=form.first_name.data,
-            last_name=form.last_name.data
-        )
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Congratulations, you are now a registered user!', 'success')
-        return redirect(url_for('auth.login'))
+        current_app.logger.info('Form validation successful')
+        try:
+            user = User(
+                full_name=form.full_name.data,
+                email=form.email.data,
+                role=form.role.data
+            )
+            user.set_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash('Congratulations, you are now a registered user!', 'success')
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            current_app.logger.error(f'Error saving user to database: {e}')
+            db.session.rollback()
+            flash('An error occurred. Please try again.', 'danger')
     
     return render_template('auth/register.html', title='Register', form=form)

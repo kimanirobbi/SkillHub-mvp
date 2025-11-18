@@ -6,26 +6,16 @@
     <title>SkillHub Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <style>
-        body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        #map { height: 100vh; width: 100%; }
-        .logo {
-            position: absolute; top: 10px; left: 20px; z-index: 1000;
-            background: rgba(255,255,255,0.9);
-            padding: 8px 12px; border-radius: 8px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .logo img { height: 30px; }
-    </style>
-</head>
-<body>
 
-    <div class="logo">
-        <img src="{{ url_for('static', filename='icons/skillhub_logo.png') }}" alt="SkillHub Logo">
+</head>
+<body class="font-sans">
+
+    <div class="absolute top-4 left-5 z-50 bg-white bg-opacity-90 p-2 px-3 rounded-lg flex items-center gap-2">
+        <img src="{{ url_for('static', filename='icons/skillhub_logo.png') }}" alt="SkillHub Logo" class="h-8">
         <strong>SkillHub Live Map</strong>
     </div>
 
-    <div id="map"></div>
+    <div id="map" class="h-screen w-full"></div>
 
     <script>
         // Initialize the map centered on Kenya

@@ -2,7 +2,7 @@ import os
 import pytest
 from flask import url_for, get_flashed_messages
 from app import create_app, db
-from app.modules import User, Professional, Role
+from app.modules import User, Professional
 from bs4 import BeautifulSoup
 import json
 from config import TestingConfig
@@ -38,9 +38,7 @@ class AuthActions(object):
         
         register_data = {
             'email': email,
-            'username': name.lower().replace(' ', '_'),
-            'first_name': name.split(' ')[0],
-            'last_name': ' '.join(name.split(' ')[1:]) if ' ' in name else 'User',
+            'full_name': name,
             'password': password,
             'password2': confirm_password,
             'submit': 'Register'
@@ -60,24 +58,11 @@ def app():
     with app.app_context():
         db.create_all()
         
-        # Create roles if they don't exist
-        roles = ['user', 'professional', 'admin']
-        for role_name in roles:
-            if not Role.query.filter_by(name=role_name).first():
-                role = Role(name=role_name, description=f'{role_name.capitalize()} role')
-                db.session.add(role)
-        
         # Create a test user
         user = User(
             email='test@example.com',
-            username='testuser',
-            first_name='Test',
-            last_name='User'
+            full_name='Test User'
         )
-        
-        # Add professional role to user
-        professional_role = Role.query.filter_by(name='professional').first()
-        user.roles.append(professional_role)
         user.set_password('testpass123')
         db.session.add(user)
         
@@ -181,7 +166,7 @@ def test_register_new_user(auth, app):
     with app.app_context():
         user = User.query.filter_by(email='newuser@example.com').first()
         assert user is not None
-        assert user.username == 'new_user'
+        assert user.full_name == 'New User'
 
 def test_register_existing_user(auth):
     """Test registration with an existing email."""

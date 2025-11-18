@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, RadioField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from app.models import User
 
@@ -10,10 +10,9 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    full_name = StringField('Full Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    first_name = StringField('First Name', validators=[DataRequired()])
-    last_name = StringField('Last Name', validators=[DataRequired()])
+    role = RadioField('Register as', choices=[('user', 'Client'), ('professional', 'Professional')], default='user', validators=[DataRequired()])
     password = PasswordField('Password', validators=[
         DataRequired(),
         Length(min=8, message='Password must be at least 8 characters long')
@@ -24,10 +23,7 @@ class RegistrationForm(FlaskForm):
     )
     submit = SubmitField('Register')
 
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user is not None:
-            raise ValidationError('Please use a different username.')
+
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - SkillHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6">Payments</h1>
+    <div class="bg-white rounded-lg shadow p-6">
+        <p>This is a placeholder page for the payment processing form.</p>
+        <p class="text-gray-600 text-center mt-4">Securely processed via M-Pesa Daraja API.</p>
+        <a href="{{ url_for('main.dashboard') }}" class="text-blue-500 hover:underline mt-4 inline-block">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

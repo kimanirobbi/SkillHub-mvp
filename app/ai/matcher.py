@@ -36,7 +36,7 @@ def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> fl
     Returns distance in kilometers.
     """
     if None in (lat1, lon1, lat2, lon2):
-        raise ValueError("All coordinates must be provided")
+        return None
         
     # Convert decimal degrees to radians
     lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
@@ -77,8 +77,11 @@ class ProfessionalMatcher:
     
     def __init__(
         self,
-        similarity_weight: float = SIMILARITY_WEIGHT,
-        distance_weight: float = DISTANCE_WEIGHT,
+        similarity_weight: float = 0.5,
+        distance_weight: float = 0.2,
+        experience_weight: float = 0.1,
+        rating_weight: float = 0.1,
+        rate_weight: float = 0.1,
         max_distance_km: float = DEFAULT_MAX_DISTANCE_KM
     ):
         """
@@ -87,19 +90,27 @@ class ProfessionalMatcher:
         Args:
             similarity_weight: Weight for skill similarity (0-1)
             distance_weight: Weight for distance (0-1)
+            experience_weight: Weight for years of experience (0-1)
+            rating_weight: Weight for rating (0-1)
+            rate_weight: Weight for hourly rate (0-1)
             max_distance_km: Maximum distance to consider (in km)
         """
-        if not (0 <= similarity_weight <= 1 and 0 <= distance_weight <= 1):
-            raise ValueError("Weights must be between 0 and 1")
+        weights = [similarity_weight, distance_weight, experience_weight, rating_weight, rate_weight]
+        if not all(0 <= w <= 1 for w in weights) or abs(sum(weights) - 1.0) > 1e-6:
+            raise ValueError("Weights must be between 0 and 1 and sum to 1")
             
         self.similarity_weight = similarity_weight
         self.distance_weight = distance_weight
+        self.experience_weight = experience_weight
+        self.rating_weight = rating_weight
+        self.rate_weight = rate_weight
         self.max_distance_km = max_distance_km
         self.model = get_model()
         
         logger.info(
             f"Initialized ProfessionalMatcher with weights: "
             f"similarity={similarity_weight}, distance={distance_weight}, "
+            f"experience={experience_weight}, rating={rating_weight}, rate={rate_weight}, "
             f"max_distance={max_distance_km}km"
         )
     
@@ -190,15 +201,16 @@ class ProfessionalMatcher:
                 
                 # Apply minimum score threshold
                 if combined_score >= min_score:
+                    distance = calculate_distance(
+                        job.location_lat, job.location_lng,
+                        pro.latitude, pro.longitude
+                    )
                     matches.append({
                         "professional": pro,
                         "score": round(combined_score, 3),
                         "similarity": round(similarity, 3),
                         "distance_score": round(distance_score, 3),
-                        "distance_km": round(calculate_distance(
-                            job.location_lat, job.location_lng,
-                            pro.latitude, pro.longitude
-                        ), 2) if None not in (pro.latitude, pro.longitude) else None
+                        "distance_km": round(distance, 2) if distance is not None else None
                     })
                     
             except Exception as e:

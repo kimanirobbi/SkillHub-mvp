@@ -6,7 +6,7 @@ def create_app():
     app = Flask(__name__)
 
     # PostgreSQL connection string
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://username:password@localhost:5432/skillhub"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:Robbi2025.@localhost:5432/skillhub"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Initialize database

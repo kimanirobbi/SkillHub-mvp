@@ -1,27 +1,27 @@
-{% extends "professional/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}My Profile{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto">
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+<div class="container">
+    <div class="bg-white rounded-lg shadow-soft overflow-hidden">
         <!-- Profile Header -->
-        <div class="bg-blue-600 text-white p-6">
+        <div class="bg-primary text-white p-6">
             <div class="flex flex-col md:flex-row items-center">
                 <div class="relative mb-4 md:mb-0 md:mr-8">
                     <img src="{{ url_for('static', filename='uploads/' + (professional.profile_picture if professional.profile_picture else 'default_profile.png')) }}" 
                          alt="{{ professional.full_name }}" 
                          class="w-32 h-32 rounded-full border-4 border-white object-cover">
-                    <label for="profile_picture" class="absolute bottom-0 right-0 bg-white text-blue-600 rounded-full p-2 cursor-pointer hover:bg-gray-100">
+                    <label for="profile_picture" class="absolute bottom-0 right-0 bg-white text-primary rounded-full p-2 cursor-pointer hover:bg-gray-100">
                         <i class="fas fa-camera"></i>
                         <input type="file" id="profile_picture" name="profile_picture" accept="image/*" class="hidden" form="profileForm">
                     </label>
                 </div>
                 <div class="text-center md:text-left">
                     <h1 class="text-3xl font-bold">{{ professional.full_name }}</h1>
-                    <p class="text-blue-100 text-lg">{{ professional.profession }}</p>
+                    <p class="text-light text-lg">{{ professional.profession }}</p>
                     <div class="flex items-center justify-center md:justify-start mt-2">
-                        <div class="flex items-center text-yellow-400">
+                        <div class="flex items-center text-warning">
                             {% for i in range(5) %}
                                 {% if i < professional.rating|int %}
                                     <i class="fas fa-star"></i>
@@ -33,7 +33,7 @@
                         </div>
                     </div>
                     <div class="mt-2">
-                        <span class="inline-block bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                        <span class="inline-block bg-primary text-white text-xs px-2 py-1 rounded-full">
                             {% if professional.is_available %}
                                 <i class="fas fa-check-circle"></i> Available for work
                             {% else %}
@@ -50,95 +50,95 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Left Column -->
                 <div>
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Personal Information</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-dark">Personal Information</h2>
                     
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="full_name">
+                        <label class="block text-dark text-sm font-bold mb-2" for="full_name">
                             Full Name
                         </label>
                         <input type="text" id="full_name" name="full_name" 
                                value="{{ professional.full_name }}" 
-                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="profession">
+                        <label class="block text-dark text-sm font-bold mb-2" for="profession">
                             Profession
                         </label>
                         <input type="text" id="profession" name="profession" 
                                value="{{ professional.profession }}" 
-                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="phone">
+                        <label class="block text-dark text-sm font-bold mb-2" for="phone">
                             Phone Number
                         </label>
                         <input type="tel" id="phone" name="phone" 
                                value="{{ professional.phone }}" 
-                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="years_experience">
+                        <label class="block text-dark text-sm font-bold mb-2" for="years_experience">
                             Years of Experience
                         </label>
                         <input type="number" id="years_experience" name="years_experience" 
                                value="{{ professional.years_experience }}" min="0"
-                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="hourly_rate">
+                        <label class="block text-dark text-sm font-bold mb-2" for="hourly_rate">
                             Hourly Rate ($)
                         </label>
                         <input type="number" id="hourly_rate" name="hourly_rate" 
                                value="{{ '%.2f'|format(professional.hourly_rate) if professional.hourly_rate else '' }}" 
                                step="0.01" min="0"
-                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                 </div>
 
                 <!-- Right Column -->
                 <div>
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Location</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-dark">Location</h2>
                     
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="address">
+                        <label class="block text-dark text-sm font-bold mb-2" for="address">
                             Address
                         </label>
                         <input type="text" id="address" name="address" 
                                value="{{ professional.address }}" 
-                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="city">
+                            <label class="block text-dark text-sm font-bold mb-2" for="city">
                                 City
                             </label>
                             <input type="text" id="city" name="city" 
                                    value="{{ professional.city }}" 
-                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                         </div>
                         <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="country">
+                            <label class="block text-dark text-sm font-bold mb-2" for="country">
                                 Country
                             </label>
                             <input type="text" id="country" name="country" 
                                    value="{{ professional.country }}" 
-                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                         </div>
                     </div>
 
                     <div class="mt-6">
-                        <h2 class="text-xl font-semibold mb-4 text-gray-800">Skills</h2>
+                        <h2 class="text-xl font-semibold mb-4 text-dark">Skills</h2>
                         <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="skills">
+                            <label class="block text-dark text-sm font-bold mb-2" for="skills">
                                 Your Skills (comma separated)
                             </label>
                             <textarea id="skills" name="skills" rows="3"
-                                    class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">{{ professional.skills if professional.skills else '' }}</textarea>
+                                    class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">{{ professional.skills if professional.skills else '' }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -146,18 +146,18 @@
 
             <!-- Bio -->
             <div class="mt-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">About Me</h2>
+                <h2 class="text-xl font-semibold mb-4 text-dark">About Me</h2>
                 <textarea id="bio" name="bio" rows="4"
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                         placeholder="Tell us about yourself and your professional experience...">{{ professional.bio if professional.bio else '' }}</textarea>
             </div>
 
             <!-- Availability -->
             <div class="mt-6 flex items-center">
                 <input type="checkbox" id="is_available" name="is_available" 
-                       class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                       class="h-5 w-5 text-primary rounded focus:ring-primary"
                        {% if professional.is_available %}checked{% endif %}>
-                <label for="is_available" class="ml-2 block text-gray-700 font-medium">
+                <label for="is_available" class="ml-2 block text-dark font-medium">
                     I am currently available for work
                 </label>
             </div>
@@ -165,7 +165,7 @@
             <!-- Save Button -->
             <div class="mt-8">
                 <button type="submit" 
-                        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        class="btn btn-primary">
                     Save Changes
                 </button>
             </div>
@@ -173,20 +173,17 @@
     </div>
 </div>
 
-<script>
-    // Preview profile picture before upload
-    document.getElementById('profile_picture').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.querySelector('.rounded-full');
-                img.src = e.target.result;
+    <script>
+        // Preview profile picture before upload
+        document.getElementById('profile_picture').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.querySelector('.rounded-full');
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(file);
-            // Submit the form when a file is selected
-            document.getElementById('profileForm').submit();
-        }
-    });
-</script>
-{% endblock %}
+        });
+    </script>{% endblock %}

@@ -2,71 +2,310 @@
 
 {% block title %}Dashboard - SkillHub{% endblock %}
 
-{% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p class="mt-2 text-sm text-gray-600">Welcome back, {{ current_user.first_name }}!</p>
-    </div>
+{% block extra_css %}
+{{ super() }}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+{% endblock %}
 
-    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="px-4 py-5 sm:px-6
-            {% if current_user.role == 'client' %}
-                bg-blue-50
-            {% elif current_user.role == 'professional' %}
-                bg-green-50
-            {% else %}
-                bg-gray-50
-            {% endif %}
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-                User Dashboard
-            </h3>
-            <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                Manage your account and activities
-            </p>
+{% block content %}
+<div id="dashboard-container" 
+     data-user-type="{{ current_user.user_type }}"
+     data-jobs-api-url="{{ url_for('geo.get_nearby_professionals') }}"
+     {% if jobs %}
+     data-initial-jobs="{{ jobs | tojson | safe }}"
+     {% endif %}
+     data-csrf-token="">
+</div>
+
+<div class="container mx-auto py-4">
+    {% if current_user.user_type == 'professional' %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h2 class="text-lg font-bold mb-4">Nearby Jobs</h2>
+                    <div id="jobs-map" class="h-96 rounded-lg overflow-hidden bg-light"></div>
+                    <div id="jobs-list" class="mt-4"></div>
+                </div>
+            </div>
+            <div>
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h2 class="text-lg font-bold mb-4">My Stats</h2>
+                    </div>
+            </div>
         </div>
-        <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
-            <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-                <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-gray-500">Full name</dt>
-                    <dd class="mt-1 text-sm text-gray-900">{{ current_user.first_name }} {{ current_user.last_name }}</dd>
+    {% else %}
+        <h1 class="text-3xl font-bold mb-6">Client Dashboard</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Post a Job -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-2">Post a New Job</h2>
+                <p class="text-gray-600 mb-4">Find the perfect professional for your project.</p>
+                <a href="{{ url_for('main.post_job') }}" class="btn btn-primary w-full">Post Job</a>
+            </div>
+
+            <!-- AI Recommendations -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-2">AI Recommendations</h2>
+                <p class="text-gray-600 mb-4">Get AI-powered recommendations for top professionals.</p>
+                <a href="{{ url_for('main.ai_recommendations') }}" class="btn btn-secondary w-full">View Recommendations</a>
+            </div>
+
+            <!-- Payments -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-2">Manage Payments</h2>
+                <p class="text-gray-600 mb-4">View your transaction history and manage payments.</p>
+                <a href="{{ url_for('main.payment') }}" class="btn btn-secondary w-full">Go to Payments</a>
+            </div>
+
+            <!-- My Job Postings -->
+            <div class="md:col-span-2 lg:col-span-3 bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">My Job Postings</h2>
+                <div class="text-gray-500">
+                    <p>Your active and past job postings will appear here.</p>
+                    <!-- Job listings would be dynamically inserted here -->
                 </div>
-                <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-gray-500">Email address</dt>
-                    <dd class="mt-1 text-sm text-gray-900">{{ current_user.email }}</dd>
-                </div>
-                <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-gray-500">Account type</dt>
-                    <dd class="mt-1 text-sm text-gray-900">
-                        {% if current_user.role %}
-                            {{ current_user.role|capitalize }}
-                        {% else %}
-                            Not set
-                        {% endif %}
-                    </dd>
-                </div>
-                <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-gray-500">Member since</dt>
-                    <dd class="mt-1 text-sm text-gray-900">{{ current_user.created_at.strftime('%B %d, %Y') }}</dd>
-                </div>
-            </dl>
+            </div>
         </div>
-        <div class="px-4 py-4 sm:px-6">
-            <a href="{{ url_for('main.dashboard') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Refresh Dashboard
-            </a>
-                        <a href="{{ url_for('auth.client_dashboard') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Continue as Client
-                        </a>
-                        {% else %}
-                        <a href="{{ url_for('main.dashboard') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Go to Dashboard
-                        </a>
-                        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration
+    const config = {
+        userType: '{{ "professional" if current_user.is_professional() else "client" }}',
+        defaultCoords: [-1.286389, 36.817223], // Nairobi
+        defaultZoom: 13
+    };
+
+    // Initialize based on user type
+    if (config.userType === 'professional') {
+        initProfessionalDashboard();
+    } else {
+        // Client dashboard doesn't need map initialization here,
+        // as the map for job posting will be on a separate page.
+    }
+
+    function initProfessionalDashboard() {
+        const map = initMap('jobs-map', config.defaultCoords, config.defaultZoom);
+        loadNearbyJobs(map);
+        
+        // Set up refresh functionality if needed
+        const refreshBtn = document.getElementById('refresh-jobs');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => loadNearbyJobs(map));
+        }
+    }
+
+    function initMap(elementId, center, zoom) {
+        const mapElement = document.getElementById(elementId);
+        if (!mapElement) {
+            console.error('Map element not found:', elementId);
+            return null;
+        }
+        
+        const map = L.map(elementId).setView(center, zoom);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        return map;
+    }
+
+    async function loadNearbyJobs(map) {
+        const jobsList = document.getElementById('jobs-list');
+        
+        try {
+            // Show loading state
+            jobsList.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading nearby jobs...</p>
+                </div>
+            `;
+
+            // In a real app, you'd fetch from your API
+            const jobs = await fetchNearbyJobs();
+            
+            // Update UI with jobs
+            updateJobsList(jobs);
+            updateJobsMap(map, jobs);
+            
+        } catch (error) {
+            console.error('Error loading jobs:', error);
+            jobsList.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Failed to load jobs. Please try again.
+                </div>
+            `;
+        }
+    }
+
+    async function fetchNearbyJobs() {
+        // Mock function - replace with actual API call
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve([
+                    {
+                        id: 1,
+                        title: 'Plumbing Repair Needed',
+                        description: 'Fix leaking kitchen sink and install new faucet',
+                        budget: 5000,
+                        profession: 'plumber',
+                        location: 'Nairobi West',
+                        latitude: -1.286389,
+                        longitude: 36.817223,
+                        distance: '2.3 km away'
+                    },
+                    {
+                        id: 2,
+                        title: 'Electrical Wiring',
+                        description: 'Install new electrical outlets in living room',
+                        budget: 8000,
+                        profession: 'electrician', 
+                        location: 'Westlands',
+                        latitude: -1.2667,
+                        longitude: 36.7833,
+                        distance: '3.1 km away'
+                    }
+                ]);
+            }, 1000);
+        });
+    }
+
+    function updateJobsList(jobs) {
+        const jobsList = document.getElementById('jobs-list');
+        
+        if (jobs.length === 0) {
+            jobsList.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="bi bi-inbox text-4xl text-gray-500"></i>
+                    <p class="mt-2 text-gray-500">No nearby jobs found</p>
+                    <small class="text-gray-500">Check back later for new opportunities</small>
+                </div>
+            `;
+            return;
+        }
+
+        jobsList.innerHTML = jobs.map(job => `
+            <div class="bg-white rounded-lg shadow-soft p-4 mb-3 job-card" data-job-id="${job.id}" data-lat="${job.latitude}" data-lng="${job.longitude}">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <h5 class="font-semibold text-lg mb-1">${job.title}</h5>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary text-white">${job.profession}</span>
+                    </div>
+                    <p class="text-gray-600">${job.description}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <div>
+                            <strong class="text-success">Ksh ${job.budget.toLocaleString()}</strong>
+                            <small class="text-gray-500 block">${job.distance}</small>
+                        </div>
+                        <button class="btn btn-outline-primary text-sm view-job-btn" data-job-id="${job.id}">
+                            View Details
+                        </button>
                     </div>
                 </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
+            </div>
+        `).join('');
+
+        // Add click handlers
+        document.querySelectorAll('.job-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const lat = parseFloat(this.getAttribute('data-lat'));
+                const lng = parseFloat(this.getAttribute('data-lng'));
+                focusOnJob(map, lat, lng);
+            });
+        });
+
+        document.querySelectorAll('.view-job-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const jobId = this.getAttribute('data-job-id');
+                viewJobDetails(jobId);
+            });
+        });
+    }
+
+    function updateJobsMap(map, jobs) {
+        // Clear existing markers
+        map.eachLayer(layer => {
+            if (layer instanceof L.Marker) {
+                map.removeLayer(layer);
+            }
+        });
+
+        // Add job markers
+        jobs.forEach(job => {
+            const marker = L.marker([job.latitude, job.longitude]).addTo(map);
+            marker.bindPopup(`
+                <div class="p-4 bg-white rounded-lg shadow-soft">
+                    <h6 class="text-lg font-semibold">${job.title}</h6>
+                    <p class="mb-1"><strong>Profession:</strong> ${job.profession}</p>
+                    <p class="mb-1"><strong>Budget:</strong> Ksh ${job.budget.toLocaleString()}</p>
+                    <p class="mb-2"><strong>Location:</strong> ${job.location}</p>
+                    <button class="btn btn-primary text-sm w-full view-details-btn" data-job-id="${job.id}">
+                        View Details
+                    </button>
+                </div>
+            `);
+
+            marker.on('popupopen', function() {
+                document.querySelector('.view-details-btn').addEventListener('click', function() {
+                    const jobId = this.getAttribute('data-job-id');
+                    viewJobDetails(jobId);
+                });
+            });
+        });
+
+        // Fit map to show all markers
+        if (jobs.length > 0) {
+            const group = new L.featureGroup(jobs.map(job => 
+                L.marker([job.latitude, job.longitude])
+            ));
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+    }
+
+    function focusOnJob(map, lat, lng) {
+        map.setView([lat, lng], 15);
+        // You could also open the marker popup here
+    }
+
+    function viewJobDetails(jobId) {
+        // Implement job details view - could be a modal or new page
+        alert(`Viewing job details for job #${jobId}`);
+        // In a real app: window.location.href = `/jobs/${jobId}`;
+    }
+
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `p-4 rounded-md relative ${type === 'warning' ? 'bg-warning/20 text-warning' : 'bg-danger/20 text-danger'}`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="absolute top-2 right-2 text-lg leading-none hover:text-gray-700" onclick="this.parentElement.remove()">
+                &times;
+            </button>
+        `;
+        
+        const container = document.querySelector('.container');
+        container.insertBefore(alertDiv, container.firstChild);
+        
+        setTimeout(() => {
+            if (alertDiv.parentElement) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
 {% endblock %}

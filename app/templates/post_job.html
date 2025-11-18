@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Post a Job - SkillHub{% endblock %}
+
+{% block extra_css %}
+{{ super() }}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6">Post a New Job</h1>
+    <div class="bg-white rounded-lg shadow p-6">
+        <form id="job-form" method="POST" action="{{ url_for('main.post_job') }}" class="space-y-4">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.title.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.title(class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary") }}
+            </div>
+            <div>
+                {{ form.description.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.description(class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary") }}
+            </div>
+            <div>
+                {{ form.profession.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.profession(class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary") }}
+            </div>
+            <div>
+                {{ form.location.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.location(class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary", id="location-input") }}
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+            </div>
+            <div>
+                <button type="button" id="get-location-btn" class="btn btn-secondary">
+                    <i class="bi bi-geo-alt"></i> Get Current Location
+                </button>
+            </div>
+            <div>
+                <div id="job-location-map" class="map-container h-64 w-full rounded-lg overflow-hidden"></div>
+            </div>
+            <div>
+                <button class="btn btn-primary w-full" type="submit">
+                    Post Job
+                </button>
+            </div>
+        </form>
+        <a href="{{ url_for('main.dashboard') }}" class="text-blue-500 hover:underline mt-4 inline-block">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const config = {
+        defaultCoords: [-1.286389, 36.817223], // Nairobi
+        defaultZoom: 13
+    };
+
+    const map = initMap('job-location-map', config.defaultCoords, config.defaultZoom);
+    setupJobForm(map);
+
+    function initMap(elementId, center, zoom) {
+        const mapElement = document.getElementById(elementId);
+        if (!mapElement) {
+            console.error('Map element not found:', elementId);
+            return null;
+        }
+        
+        const map = L.map(elementId).setView(center, zoom);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        return map;
+    }
+
+    function setupJobForm(map) {
+        let marker = L.marker(config.defaultCoords).addTo(map);
+        
+        // Map click handler
+        map.on('click', function(e) {
+            const { lat, lng } = e.latlng;
+            updateMarkerPosition(marker, lat, lng);
+            updateLocationFields(lat, lng);
+        });
+
+        // Current location button
+        const getLocationBtn = document.getElementById('get-location-btn');
+        if (getLocationBtn) {
+            getLocationBtn.addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    this.disabled = true;
+                    this.innerHTML = '<i class="bi bi-geo-alt-fill"></i>';
+                    
+                    navigator.geolocation.getCurrentPosition(
+                        position => {
+                            const { latitude, longitude } = position.coords;
+                            updateMarkerPosition(marker, latitude, longitude);
+                            updateLocationFields(latitude, longitude);
+                            map.setView([latitude, longitude], 15);
+                            
+                            this.disabled = false;
+                            this.innerHTML = '<i class="bi bi-geo-alt"></i> Get Current Location';
+                        },
+                        error => {
+                            console.error('Error getting location:', error);
+                            alert('Unable to retrieve your location. Please select a location on the map.');
+                            
+                            this.disabled = false;
+                            this.innerHTML = '<i class="bi bi-geo-alt"></i> Get Current Location';
+                        },
+                        { timeout: 10000 }
+                    );
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                }
+            });
+        }
+
+        // Form submission
+        const jobForm = document.getElementById('job-form');
+        if (jobForm) {
+            jobForm.addEventListener('submit', async function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                
+                // Validate location
+                const latitude = document.getElementById('latitude').value;
+                const longitude = document.getElementById('longitude').value;
+                const locationInput = document.getElementById('location-input');
+                
+                if (!latitude || !longitude) {
+                    e.preventDefault();
+                    if (locationInput.value) {
+                        // Try to geocode the address
+                        try {
+                            submitBtn.disabled = true;
+                            
+                            const coords = await geocodeAddress(locationInput.value);
+                            document.getElementById('latitude').value = coords.lat;
+                            document.getElementById('longitude').value = coords.lng;
+                            
+                            // Continue with form submission
+                            this.submit();
+                        } catch (error) {
+                            console.error('Geocoding error:', error);
+                            alert('Could not find the specified location. Please select a location on the map.');
+                            submitBtn.disabled = false;
+                        }
+                    } else {
+                        alert('Please select a job location on the map.');
+                    }
+                    return false;
+                }
+                
+                // Show loading state for normal submission
+                submitBtn.disabled = true;
+            });
+        }
+    }
+
+    function updateMarkerPosition(marker, lat, lng) {
+        marker.setLatLng([lat, lng]);
+    }
+
+    async function updateLocationFields(lat, lng) {
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+        
+        // Reverse geocode to get address
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`);
+            const data = await response.json();
+            if (data.display_name) {
+                document.getElementById('location-input').value = data.display_name;
+            }
+        } catch (error) {
+            console.error('Error reverse geocoding:', error);
+            // Fallback to coordinates
+            document.getElementById('location-input').value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        }
+    }
+
+    async function geocodeAddress(address) {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`);
+        const data = await response.json();
+        
+        if (data && data[0]) {
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        }
+        throw new Error('Address not found');
+    }
+});
+</script>
+{% endblock %}

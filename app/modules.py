@@ -30,10 +30,8 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
+    full_name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    first_name = db.Column(db.String(64), nullable=True)
-    last_name = db.Column(db.String(64), nullable=True)
     bio = db.Column(db.Text)
     photo = db.Column(db.String(255))  # store image path
     latitude = db.Column(db.Float, nullable=True)
@@ -48,7 +46,7 @@ class User(UserMixin, db.Model):
     reset_token = db.Column(db.String(100), unique=True, nullable=True)
     reset_token_expires = db.Column(db.DateTime, nullable=True)
     last_login = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=db.func.now())
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
@@ -76,9 +74,7 @@ class User(UserMixin, db.Model):
         
     def get_full_name(self):
         """Return the user's full name."""
-        if self.first_name:  # This now contains the full name
-            return self.first_name
-        return self.username or self.email.split('@')[0]
+        return self.full_name
     
     def is_professional(self):
         """Check if the user has a professional profile"""
