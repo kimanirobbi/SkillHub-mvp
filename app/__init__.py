@@ -1,4 +1,5 @@
 import os
+import sys # Import sys
 from flask import Flask, request # Import request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -46,14 +47,14 @@ def create_app(config_class=None):
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
     # Configure logging
-    # Create a file handler for logging
-    file_handler = logging.FileHandler('flask_requests.log')
-    file_handler.setLevel(logging.INFO)
+    # Log to stdout
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setLevel(logging.INFO)
     formatter = logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     )
-    file_handler.setFormatter(formatter)
-    app.logger.addHandler(file_handler)
+    stream_handler.setFormatter(formatter)
+    app.logger.addHandler(stream_handler)
     app.logger.setLevel(logging.INFO)
     app.logger.info('Flask startup')
 
