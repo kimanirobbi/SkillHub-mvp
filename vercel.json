@@ -1,4 +1,9 @@
 {
+  "build": {
+    "env": {
+      "FLASK_ENV": "production"
+    }
+  },
   "builds": [
     {
       "src": "build.sh",
