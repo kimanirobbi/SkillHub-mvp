@@ -10,6 +10,7 @@ flask-limiter>=4.0.0
 flask-migrate>=4.0.5
 gunicorn
 beautifulsoup4
+Pillow
 
 
 
