@@ -8,6 +8,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 import logging # Import logging
+from whitenoise import WhiteNoise
 
 # Load environment variables from .env file
 load_dotenv()
@@ -45,6 +46,9 @@ def create_app(config_class=None):
     app.static_folder = static_path
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
     app.config['TEMPLATES_AUTO_RELOAD'] = True
+
+    # Add whitenoise
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_path, prefix='/static/')
 
     # Configure logging
     # Log to stdout
