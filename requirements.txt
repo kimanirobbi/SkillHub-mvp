@@ -13,7 +13,6 @@ beautifulsoup4
 Pillow
 whitenoise
 psycopg2-binary
-pysqlite3
 
 
 
