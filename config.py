@@ -23,7 +23,7 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     TESTING = False
     WTF_CSRF_ENABLED = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'skillhub.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 
 config = {
     'development': DevelopmentConfig,
