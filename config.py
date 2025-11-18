@@ -24,6 +24,8 @@ class ProductionConfig(Config):
     TESTING = False
     WTF_CSRF_ENABLED = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    if not SQLALCHEMY_DATABASE_URI:
+        raise ValueError("No DATABASE_URL set for production")
 
 config = {
     'development': DevelopmentConfig,
