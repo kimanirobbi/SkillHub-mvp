@@ -11,7 +11,7 @@ import logging # Import logging
 from whitenoise import WhiteNoise
 
 # Load environment variables from .env file
-load_dotenv()
+
 
 db = SQLAlchemy()
 migrate = Migrate()
