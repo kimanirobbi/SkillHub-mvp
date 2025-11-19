@@ -29,6 +29,18 @@ login_manager = LoginManager()
 def create_app(config_class=None):
     # Create and configure the app
     app = Flask(__name__)
+
+    # Set database URI from environment variable
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+        'SQLALCHEMY_DATABASE_URI',
+        'sqlite:///app.db'  # fallback for local development
+    )
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Initialize extensions
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login_manager.init_app(app)
     
     # Configure the app
     if config_class is None:
@@ -73,8 +85,9 @@ def create_app(config_class=None):
         return response
 
     # Initialize extensions
-    db.init_app(app)
-    migrate.init_app(app, db)
+    # The following lines are already present above, so they are commented out to avoid duplication.
+    # db.init_app(app)
+    # migrate.init_app(app, db)
     # limiter.init_app(app)
 
     # Initialize Flask-Login
