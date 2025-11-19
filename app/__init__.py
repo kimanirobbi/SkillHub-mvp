@@ -42,12 +42,6 @@ def create_app(config_class=None):
         'connect_args': {'check_same_thread': False} if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI'] else {}
     }
 
-    # Initialize extensions
-    db.init_app(app)
-    migrate.init_app(app, db)
-    login_manager.init_app(app)
-    # limiter.init_app(app) # Uncomment if you want to use the limiter
-
     # Configure the app with config class if provided
     if config_class is None:
         from config import config
@@ -55,6 +49,12 @@ def create_app(config_class=None):
         config_class = config[config_name]
     
     app.config.from_object(config_class)
+
+    # Initialize extensions (moved after app.config.from_object)
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login_manager.init_app(app)
+    # limiter.init_app(app) # Uncomment if you want to use the limiter
 
     # Configure template and static folders
     base_dir = os.path.dirname(__file__)
