@@ -28,6 +28,11 @@ login_manager = LoginManager()
 
 def create_app(config_class=None):
     # Create and configure the app
+    if os.getenv('VERCEL'):
+        instance_path = tempfile.gettempdir()
+    else:
+        instance_path = None
+        
     app = Flask(__name__, instance_relative_config=False)
 
     # Set database URI from environment variable
