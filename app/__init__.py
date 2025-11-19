@@ -9,8 +9,10 @@ from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 import logging # Import logging
 from whitenoise import WhiteNoise
+import tempfile # Import tempfile
 
 # Load environment variables from .env file
+load_dotenv()
 
 
 db = SQLAlchemy()
@@ -32,7 +34,7 @@ def create_app(config_class=None):
         instance_path = tempfile.gettempdir()
     else:
         instance_path = None
-        
+
     app = Flask(__name__, instance_relative_config=False)
 
     # Set database URI from environment variable
@@ -89,12 +91,6 @@ def create_app(config_class=None):
         app.logger.info(f'Response: {request.method} {request.url} Status: {response.status_code}')
         return response
 
-    # Initialize extensions
-    # The following lines are already present above, so they are commented out to avoid duplication.
-    # db.init_app(app)
-    # migrate.init_app(app, db)
-    # limiter.init_app(app)
-
     # Initialize Flask-Login
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
@@ -118,7 +114,6 @@ def create_app(config_class=None):
     app.register_blueprint(admin_bp)
 
     return app
-
 @login_manager.user_loader
 def load_user(user_id):
     # local import to avoid circular dependency during app creation
