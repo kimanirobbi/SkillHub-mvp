@@ -57,6 +57,8 @@ def create_app(config_class=None):
     
     app.config.from_object(config_class)
     
+    return app
+    
     # Configure template and static folders
     base_dir = os.path.dirname(__file__)
     templates_path = os.path.abspath(os.path.join(base_dir, 'templates'))  # Fixed typo: 'templetes' -> 'templates'
