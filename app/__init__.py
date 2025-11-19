@@ -28,7 +28,7 @@ login_manager = LoginManager()
 
 def create_app(config_class=None):
     # Create and configure the app
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=False)
 
     # Set database URI from environment variable
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
