@@ -38,9 +38,7 @@ def create_app(config_class=None):
         'sqlite:///app.db'  # fallback for local development
     )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'connect_args': {'check_same_thread': False} if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI'] else {}
-    }
+
 
     # Configure the app with config class if provided
     if config_class is None:
@@ -49,6 +47,11 @@ def create_app(config_class=None):
         config_class = config[config_name]
     
     app.config.from_object(config_class)
+
+    # Set SQLALCHEMY_ENGINE_OPTIONS after all config is loaded
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'connect_args': {'check_same_thread': False} if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI'] else {}
+    }
 
     # Initialize extensions (moved after app.config.from_object)
     db.init_app(app)
