@@ -1,19 +1,18 @@
 import os
-import sys # Import sys
-from flask import Flask, request # Import request
+import sys
+import tempfile
+import logging
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
-import logging # Import logging
 from whitenoise import WhiteNoise
-import tempfile # Import tempfile
 
 # Load environment variables from .env file
 load_dotenv()
-
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -24,18 +23,14 @@ login_manager = LoginManager()
 #     storage_uri="memory://"
 # )
 
-# ...
-
-# limiter.init_app(app)
-
 def create_app(config_class=None):
-    # Create and configure the app
+    # Use temp directory for instance path on Vercel
     if os.getenv('VERCEL'):
         instance_path = tempfile.gettempdir()
     else:
         instance_path = None
 
-    app = Flask(__name__, instance_relative_config=False)
+    app = Flask(__name__, instance_path=instance_path, instance_relative_config=False)
 
     # Set database URI from environment variable
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
@@ -43,24 +38,27 @@ def create_app(config_class=None):
         'sqlite:///app.db'  # fallback for local development
     )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'connect_args': {'check_same_thread': False} if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI'] else {}
+    }
+
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    
-    # Configure the app
+    # limiter.init_app(app) # Uncomment if you want to use the limiter
+
+    # Configure the app with config class if provided
     if config_class is None:
         from config import config
         config_name = os.getenv('FLASK_ENV', 'development')
         config_class = config[config_name]
     
     app.config.from_object(config_class)
-    
 
     # Configure template and static folders
     base_dir = os.path.dirname(__file__)
-    templates_path = os.path.abspath(os.path.join(base_dir, 'templates'))  # Fixed typo: 'templetes' -> 'templates'
+    templates_path = os.path.abspath(os.path.join(base_dir, 'templates'))
     static_path = os.path.abspath(os.path.join(base_dir, 'static'))
     app.template_folder = templates_path
     app.static_folder = static_path
@@ -71,7 +69,6 @@ def create_app(config_class=None):
     app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_path, prefix='/static/')
 
     # Configure logging
-    # Log to stdout
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setLevel(logging.INFO)
     formatter = logging.Formatter(
@@ -93,7 +90,6 @@ def create_app(config_class=None):
         return response
 
     # Initialize Flask-Login
-    login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 
     # Import models to ensure they are registered with SQLAlchemy
@@ -115,6 +111,7 @@ def create_app(config_class=None):
     app.register_blueprint(admin_bp)
 
     return app
+
 @login_manager.user_loader
 def load_user(user_id):
     # local import to avoid circular dependency during app creation
